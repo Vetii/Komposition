@@ -10,13 +10,13 @@ An `Image` is also an instance of several usual classes.
 
 `fmap` for images apply a function to the whole domain independently.
 
-## `Image as an applicative functor`
+## `Image` as an applicative functor
 
 With the `Applicative` instance for images, it is possible to combine two images,
 in the same manner one combines them using blendings in “usual” image processing
 programs.
 
-## Image as a monad
+## `Image` as a monad
 
 This one is a bit trickier, but also a very new way to combine images.
 
