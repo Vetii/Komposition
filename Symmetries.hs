@@ -24,6 +24,8 @@ central (cx, cy) (x,y) = (x', y')
 
 rotational :: Float -> Transformation
 rotational p (x,y) = fromPolar (r, t)
-  where r = fst $ toPolar (x,y)
-        t = triangle p $ snd $ toPolar (x,y)
-        triangle p x = (1 / p) * (p - abs(x `mod'` (2*p) - p))
+  where r = fst pol
+        t = triangle p p $ snd pol
+        pol = toPolar (x,y)
+        triangle a p x = 
+          (a / p) * (p - abs(x `mod'` (2*p) - p))
