@@ -1,2 +1,30 @@
 # Komposition
-What if I considered an image as being an arbitrary function of x and y? Let's find out!
+
+Komposition is based on the representation of a image as a 2D function used in the *Clastic* library.
+
+Therefore, an image is a function `Point -> a`
+
+An `Image` is also an instance of several usual classes.
+
+## `Image` as a functor
+
+`fmap` for images apply a function to the whole domain independently.
+
+## `Image as an applicative functor`
+
+With the `Applicative` instance for images, it is possible to combine two images,
+in the same manner one combines them using blendings in “usual” image processing
+programs.
+
+## Image as a monad
+
+This one is a bit trickier, but also a very new way to combine images.
+
+Let’s consider the types of the `>>=` operator: `>>= :: m a -> (a -> m b ) -> m b`.
+
+Which gives us, for images: `>>= :: Image a -> (a -> Image b) -> Image b`
+
+The implementation of `>>=` reads the value of a pixel at a point, and
+uses the signal to generate a new signal. A common way to use this is to transform
+an image `b` using the value of an image `a`. Here, `a` plays the role of a displacement
+map. 
