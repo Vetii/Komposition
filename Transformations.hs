@@ -33,3 +33,9 @@ toPolar   (x,y) = (mag (x, y), atan2 y x)
 
 center :: Vector -> Transformation 
 center (w,h) = translate (-w/2, -h/2)
+
+flipX :: Transformation 
+flipX (x,y) = (-x,y)
+
+flipY :: Transformation 
+flipY (x,y) = (x,-y)
