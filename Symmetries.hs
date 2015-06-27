@@ -28,6 +28,7 @@ rotational p (x,y) = fromPolar (r, t)
         t = triangle p p $ snd pol
         pol = toPolar (x,y)
 
+triangle :: (Fractional a, Real a) => a -> a -> a -> a
 triangle a p x = (a / p) * (p - abs(x `mod'` (2*p) - p))
 
 relativeTo :: Point -> Transformation 
@@ -38,6 +39,17 @@ relativeTo (px, py) (x,y) = (x', y')
 repeat :: Float -> Transformation
 repeat d (x,y) = (triangle d d x, y)
 
+axis :: Transformation
+axis (x,y) = (x, abs y)
+
+repeatMag :: Float -> Transformation 
+repeatMag d (x,y) = fromPolar (triangle d d m, t)
+  where (m, t) = toPolar (x,y)
+
 translational :: Vector -> Transformation
 translational (dx,dy) = Symmetries.repeat mag . rotate phase
+  where (mag, phase) = toPolar (dx, dy)
+
+axial :: Vector -> Transformation
+axial (dx, dy) = axis . rotate phase 
   where (mag, phase) = toPolar (dx, dy)
