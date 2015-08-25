@@ -3,21 +3,21 @@ module Blendings where
 import Komposition
 import Control.Applicative
 
-type Blending a = Image a -> Image a -> Image a
+type Blending a = Komposition a -> Komposition a -> Komposition a
 
 blendWith :: (a -> a -> a)
-    -> Image a
-    -> Image a
-    -> Image a
+    -> Komposition a
+    -> Komposition a
+    -> Komposition a
 blendWith f i1 i2 = f <$> i1 <*> i2 
 
-instance (Num a) => Num (Image a) where
+instance (Num a) => Num (Komposition a) where
     (+) = blendWith (+)
     (*) = blendWith (*)
     (-) = blendWith (-)
     abs = fmap abs
     signum = fmap signum
-    fromInteger x = Image (const (fromInteger x))
+    fromInteger x = Komposition (const (fromInteger x))
 
 add :: (Num a) => Blending a
 add = blendWith (+)
@@ -37,7 +37,7 @@ maxBlend = blendWith max
 minBlend :: (Ord a) => Blending a
 minBlend = blendWith min
 
-average :: (Num a, Fractional a) => [Image a] -> Image a
+average :: (Num a, Fractional a) => [Komposition a] -> Komposition a
 average imgs = fmap (\v -> v / fromIntegral (length imgs)) (sum imgs)
 
 or :: Blending Bool

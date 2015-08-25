@@ -3,45 +3,47 @@ module Komposition where
 import Control.Applicative
 import Control.Monad
 import Data.Function
+import Data.Vect.Float
 
-type Point = (Float, Float)
-type PolarPoint = (Float, Float)
+type Point = Vec2
+type PolarPoint = Vec2
 
---type Image a = (Point -> a)
-data Image a = Image (Point -> a)
+--type Komposition a = (Point -> a)
+data Komposition a = Komposition (Point -> a)
 
-instance Functor Image where
+instance Functor Komposition where
     -- fmap :: (a -> b) -> f a -> f b
-    fmap f (Image i) = Image (f . i)
+    fmap f (Komposition i) = Komposition (f . i)
 
-instance Applicative Image where
+instance Applicative Komposition where
     -- pure :: a -> f a
-    pure i = Image (pure i)
+    pure i = Komposition (pure i)
     -- (<*>) :: f (a -> b) -> f a -> f b
-    (<*>) (Image f) (Image i) = Image (f <*> i)
+    (<*>) (Komposition f) (Komposition i) = Komposition (f <*> i)
 
-instance Monad Image where
+instance Monad Komposition where
     return = pure
     -- (>>=) :: m a -> (a -> m b) -> m b
     (>>=) i f = paste $ fmap f i
 
-paste :: Image (Image a) -> Image a
-paste (Image s) = Image $ fetch <*> s
+paste :: Komposition (Komposition a) -> Komposition a
+paste (Komposition s) = Komposition $ fetch <*> s
 
 type Frac = Float
 
-fetch :: Point -> Image a -> a
-fetch p (Image i) = i p
+fetch :: Point -> Komposition a -> a
+fetch p (Komposition i) = i p
 
-mag :: Point -> Float 
-mag (x,y) = sqrt (x^2 + y^2)
+clamp :: (Ord a, Num a) => a -> a -> a -> a
+clamp mini maxi x = min (max x mini) maxi
 
-constraint :: (Ord a, Num a) => a -> a -> a -> a
-constraint mini maxi x = min (max x mini) maxi
+smoothstep :: (Ord a, Num a) => a -> a
+smoothstep x = 3 * x'^2 - 2 * x'^3
+  where x' = clamp 0 1 x
 
 fromBool :: Bool -> Frac
 fromBool True = 1.0
 fromBool False = 0.0
 
 toIntegral :: (Integral a) => Frac -> a
-toIntegral x = floor $ 255 * constraint 0 1 x
+toIntegral x = floor $ 255 * clamp 0 1 x

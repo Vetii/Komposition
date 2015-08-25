@@ -1,55 +1,41 @@
 module Symmetries where
 
 import Komposition
-import Transformations
+import Transformations.Basic
 import Blendings
 
 import Data.Fixed
+import Data.Vect.Float
+import Data.Vect.Float.Util.Dim2 (angle2)
+
 
 -- Symmetries return the image of a point, 
 -- the blending is left to the user
 -- the blending should be commutative
 symmetrize :: Transformation -> -- Transformation (symmetry)
   Blending a -> -- Blend mode
-  Image a -> -- Base image
-  Image a -- Result
+  Komposition a -> -- Base image
+  Komposition a -- Result
 symmetrize s b i = b (transform s i) i
 
-central :: Point -> Transformation
-central (cx, cy) (x,y) = (x', y')
-  where dx = x - cx
-        dy = y - cy
-        x' = cx - abs dx
-        y' = cy - abs dy
+triangle :: (Floating a, Fractional a) => a -> a -> a -> a
+triangle a p x = (a/pi) * acos (cos (pi * x / p))
 
 rotational :: Float -> Transformation
-rotational p (x,y) = fromPolar (r, t)
-  where r = fst pol
-        t = triangle p p $ snd pol
-        pol = toPolar (x,y)
-
-triangle :: (Fractional a, Real a) => a -> a -> a -> a
-triangle a p x = (a / p) * (p - abs(x `mod'` (2*p) - p))
-
-relativeTo :: Point -> Transformation 
-relativeTo (px, py) (x,y) = (x', y')
-  where x' = x - px
-        y' = y - py
+rotational ph p  = fromPolar (Vec2 r t)
+  where r = len p
+        t = triangle ph ph $ angle2 p
 
 repeat :: Float -> Transformation
-repeat d (x,y) = (triangle d d x, y)
+repeat d (Vec2 x y) = Vec2 (triangle d d x) y
 
 axis :: Transformation
-axis (x,y) = (x, abs y)
+axis (Vec2 x y) = Vec2 x (abs y)
 
-repeatMag :: Float -> Transformation 
-repeatMag d (x,y) = fromPolar (triangle d d m, t)
-  where (m, t) = toPolar (x,y)
+translational :: Vec2 -> Transformation
+translational v = Symmetries.repeat mag . rotate phase
+  where (mag, phase) = (len v, angle2 v)
 
-translational :: Vector -> Transformation
-translational (dx,dy) = Symmetries.repeat mag . rotate phase
-  where (mag, phase) = toPolar (dx, dy)
-
-axial :: Vector -> Transformation
-axial (dx, dy) = axis . rotate phase 
-  where (mag, phase) = toPolar (dx, dy)
+axial :: Vec2 -> Transformation
+axial v = axis . rotate phase 
+  where (mag, phase) = (len v, angle2 v)

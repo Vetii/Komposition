@@ -16,9 +16,9 @@ build-type:          Simple
 cabal-version:       >=1.10
 
 library
-  exposed-modules:     Komposition, Blendings, Filters, Transformations, Symmetries
+  exposed-modules:     Komposition, Blendings, Filters, Transformations.Basic, Transformations.Complex, Symmetries
   -- other-modules:       
   -- other-extensions:    
-  build-depends:       base >=4.7
+  build-depends:       base >=4.7, vect >= 0.4.7
   -- hs-source-dirs:      
   default-language:    Haskell2010
