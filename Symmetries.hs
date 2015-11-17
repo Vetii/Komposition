@@ -33,10 +33,17 @@ repeat d (Vec2 x y) = Vec2 (triangle d d x) y
 axis :: Transformation
 axis (Vec2 x y) = Vec2 x (abs y)
 
-translational :: Vec2 -> Transformation
-translational v = Symmetries.repeat mag . rotate phase
-  where (mag, phase) = (len v, angle2 v)
+translational :: (AbelianGroup v, DotProd v, Vector v) => v -> Transformation v
+translational v p = let 
+    nrml = project p v     -- get projection on normal of v
+    proj = p &- nrml -- get projection along v
+    dir  = normalize v 
+    l = len v
+    trgtLength = triangle l l (len proj)
+    in scalarMul trgtLength dir &+ nrml
 
-axial :: Vec2 -> Transformation
-axial v = axis . rotate phase 
-  where (mag, phase) = (len v, angle2 v)
+axial v = chBase newbase . axis . chBase (inverse newbase)
+    where nv = normalize v
+          normal = rotate (pi / 2) nv
+          newbase = (Mat2 nv normal)
+
