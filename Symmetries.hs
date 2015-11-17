@@ -21,10 +21,11 @@ symmetrize s b i = b (transform s i) i
 triangle :: (Floating a, Fractional a) => a -> a -> a -> a
 triangle a p x = (a/pi) * acos (cos (pi * x / p))
 
-rotational :: Float -> Transformation
-rotational ph p  = fromPolar (Vec2 r t)
+rotational :: (Integral a) => a -> Transformation
+rotational o p  = fromPolar (Vec2 r t)
   where r = len p
         t = triangle ph ph $ angle2 p
+        ph = pi / (fromIntegral o)
 
 repeat :: Float -> Transformation
 repeat d (Vec2 x y) = Vec2 (triangle d d x) y

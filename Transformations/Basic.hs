@@ -29,8 +29,8 @@ fromPolar (Vec2 r t) = Vec2 (r * cos t) (r * sin t)
 toPolar :: Vec2 -> PolarPoint
 toPolar p = Vec2 (len p) (angle2 p)
 
-center :: Float -> Float -> Transformation 
-center w h = translate $ Vec2 (-w/2) (-h/2)
+center :: Vec2 -> Transformation 
+center (Vec2 w h) = translate $ Vec2 (-w/2) (-h/2)
 
 flipX :: Transformation 
 flipX (Vec2 x y) = Vec2 (-x) y
