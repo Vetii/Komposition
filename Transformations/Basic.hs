@@ -43,3 +43,8 @@ circleInversion x0 k x = x0 &+ scalarMul (1/(len (x &- x0) ^ 2)) (scalarMul (k ^
 
 swirl :: Float -> Transformation
 swirl f p = rotate (f * log (len p)) p
+
+-- Express a vector with other vectors
+chBase :: Mat2 -> Transformation
+chBase base v = (inverse base) *. v
+
