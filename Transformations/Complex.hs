@@ -17,6 +17,37 @@ transform :: ComplexTransformation Float
   -> Komposition b -> Komposition b
 transform t = TB.transform (fromComplex . t . toComplex)
 
+-- Riemann Sphere
+data RiemannComplex a = RC (Complex a) | Infinity
+    deriving (Show)
+
+(+:) :: a -> a -> RiemannComplex a
+(+:) x y = RC (x :+ y)
+
+instance (RealFloat a, Num a) => Num (RiemannComplex a) where
+    (+) z Infinity   = Infinity
+    (+) Infinity z   = Infinity
+    (RC z) + (RC z') = RC (z + z')
+    (*) z Infinity   = Infinity
+    (*) Infinity z   = Infinity
+    (RC z) * (RC z') = RC (z * z')
+    abs Infinity = Infinity
+    abs (RC z)   = RC (abs z)
+    signum Infinity = 1
+    signum (RC z)  = RC (signum z)
+    fromInteger = RC . fromInteger
+    negate Infinity = Infinity
+    negate (RC z)   = RC (negate z)
+    (-) z Infinity = Infinity
+    (-) Infinity z = Infinity
+    (-) (RC z) (RC z') = RC (z - z')
+
+instance (RealFloat a) => Fractional (RiemannComplex a) where
+    (/) z (RC 0) = Infinity
+    (/) z Infinity = RC 0
+    (RC z) / (RC z') = RC (z / z')
+    fromRational a = RC (fromRational a) 
+
 -- Möbius transforms
 data Mobius t = Mobius { a :: Complex t,
                          b :: Complex t,
